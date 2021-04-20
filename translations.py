@@ -21,6 +21,7 @@ pytesseract.pytesseract.tesseract_cmd = AppDataPath + "\\local\\programs\\Tesser
 img = Image.open(os.path.dirname(__file__) + "\\transl.PNG")
 text = pytesseract.image_to_string(img, lang = 'eng')
 
+print(text)
 
 inputToContinue("please make revisions to the text file and press enter to continue")
 print("please make revisions to text file ")
