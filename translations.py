@@ -2,7 +2,14 @@
 
 from PIL import Image #for image processing
 import pytesseract # for photo to text
-import os # for fliepaths
+import os # for fliepaths and os things
+
+#add color class so you can print in colors easily
+class col:
+    white = '\033[0;37;40m'
+    green = '\033[92m'
+    red = '\033[93m'
+    pink = '\033[95m'
 
 #add a user input to continue
 def inputToContinue(question):
@@ -12,22 +19,44 @@ def inputToContinue(question):
 #create a relative file path to reference
 userprofile = os.environ['USERPROFILE']
 AppDataPath = os.path.join(userprofile, 'AppData')
-print("userprofile is: " + userprofile)
+print(col.green + "userprofile is: " + userprofile)
 
 #set the file location of tesseract
-pytesseract.pytesseract.tesseract_cmd = AppDataPath + "\\local\\programs\\Tesseract-OCR\\tesseract.exe"
+try:
+    #try to open tesseract to detect if it is there
+    open(AppDataPath + "\\local\\programs\\Tesseract-OCR\\tesseract.exe")
+except:
+    #print a red error
+    print(col.red + AppDataPath + "\\local\\programs\\Tesseract-OCR\\tesseract.exe" + " does not exist")
+else:
+    #set it so that tesseract can called with pytesseract.
+    pytesseract.pytesseract.tesseract_cmd = AppDataPath + "\\local\\programs\\Tesseract-OCR\\tesseract.exe"
+
 
 #process the image
 img = Image.open(os.path.dirname(__file__) + "\\transl.PNG")
 text = pytesseract.image_to_string(img, lang = 'eng')
 
-with open('transl.txt', mode ='w') as file:     
-    file.write(text)
-    print("text file written to " + os.path.dirname(__file__) + "\\transl.txt" )
+#write the text to 'transl.txt' in this directory
+try:
+    f = open('transl.txt')
+except IOError:
+        print(col.red + IOError)
+else:
+    with open('transl.txt', mode ='w') as f:     
+        f.write(text)
+        print(col.green + "text file written to " + os.path.dirname(__file__) + "\\transl.txt" )
+        f.close()
 
+#code asks you to edit before you continue
+inputToContinue(col.white + "please press enter to make revisions to the text file")
 
-inputToContinue("please make revisions to the text file and press enter to continue")
-print("please make revisions to text file ")
+#run the text file to edit
+os.startfile(os.path.dirname(__file__) + "\\transl.txt")
+os.startfile(os.path.dirname(__file__) + "\\transl.png")
+
+#asks you to enter once you are done editing
+inputToContinue(col.white + "please press enter once you are done with revisions to the document")
 
 
 
