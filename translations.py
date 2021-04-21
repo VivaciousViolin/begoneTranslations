@@ -3,6 +3,8 @@
 from PIL import Image #for image processing
 import pytesseract # for photo to text
 import os # for fliepaths and os things
+from docx import Document #to write to .docs files
+import unicodedata #remove unicode to transfer to .docx
 
 #add color class so you can print in colors easily
 class col:
@@ -22,22 +24,32 @@ AppDataPath = os.path.join(userprofile, 'AppData')
 print(col.green + "userprofile is: " + userprofile)
 
 #set the file location of tesseract
-try:
-    #try to open tesseract to detect if it is there
-    open(AppDataPath + "\\local\\programs\\Tesseract-OCR\\tesseract.exe")
-except:
-    #print a red error
-    print(col.red + AppDataPath + "\\local\\programs\\Tesseract-OCR\\tesseract.exe" + " does not exist")
-else:
-    #set it so that tesseract can called with pytesseract.
-    pytesseract.pytesseract.tesseract_cmd = AppDataPath + "\\local\\programs\\Tesseract-OCR\\tesseract.exe"
+pytesseract.pytesseract.tesseract_cmd = AppDataPath + "\\local\\programs\\Tesseract-OCR\\tesseract.exe"
 
 
 #process the image
 img = Image.open(os.path.dirname(__file__) + "\\transl.PNG")
 text = pytesseract.image_to_string(img, lang = 'eng')
 
-#write the text to 'transl.txt' in this directory
+
+#write to .docx prerequesites
+document = Document()
+
+#write the text to 'transl.docx' in this directory
+try:
+    d = document.add_paragraph('Translations:')
+except IOError:
+        print(col.red + IOError)
+else:
+    with open('transl.docx', mode ='w') as d:     
+        document.add_paragraph(text)
+        document.save('transl.docx')
+        print(col.green + "text file written to " + os.path.dirname(__file__) + "\\transl.docx" )
+        
+
+
+"""
+#write the text to 'transl.docx' in this directory
 try:
     f = open('transl.txt')
 except IOError:
@@ -47,12 +59,14 @@ else:
         f.write(text)
         print(col.green + "text file written to " + os.path.dirname(__file__) + "\\transl.txt" )
         f.close()
+"""
+
 
 #code asks you to edit before you continue
 inputToContinue(col.white + "please press enter to make revisions to the text file")
 
 #run the text file to edit
-os.startfile(os.path.dirname(__file__) + "\\transl.txt")
+os.startfile(os.path.dirname(__file__) + "\\transl.docx")
 os.startfile(os.path.dirname(__file__) + "\\transl.png")
 
 #asks you to enter once you are done editing
