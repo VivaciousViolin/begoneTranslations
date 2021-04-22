@@ -1,5 +1,3 @@
-
-
 from PIL import Image #for image processing
 import pytesseract # for photo to text
 import os # for fliepaths and os things
