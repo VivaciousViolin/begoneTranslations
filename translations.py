@@ -3,6 +3,8 @@ import pytesseract # for photo to text
 import os # for fliepaths and os things
 from docx import Document #to write to .docs files   INSTALL python-docx
 import unicodedata #remove unicode to transfer to .docx
+import re # REGEX LET'S GO
+import tkinter as tk
 
 #https://github.com/UB-Mannheim/tesseract/wiki
 
@@ -28,103 +30,82 @@ print(col.green + "userprofile is: " + userprofile)
 pytesseract.pytesseract.tesseract_cmd = AppDataPath + "\\local\\programs\\Tesseract-OCR\\tesseract.exe"
 
 
-#process the image
-img = Image.open(os.path.dirname(__file__) + "\\transl.PNG")
-text = pytesseract.image_to_string(img, lang = 'eng')
-
-
 #write to .docx prerequesites
 document = Document()
 
 
-import re
-#write the text to 'transl.docx' in this directory
-try:
-    d = document.add_paragraph('Translations:')
-except IOError:
-        print(col.red + IOError)
-else:
-    with open('transl.docx', mode ='w') as d:
-        #re.match("[a-zA-Z0-9 ,.'\"\n:();]")
-        formattedText = re.sub("[a-zA-Z0-9 ,.'\"\n]", " ", text)
-        print(formattedText)
-        #document.add_paragraph(formattedText)
-        #document.save('transl.docx')
-        print(col.green + "text file written to " + os.path.dirname(__file__) + "\\transl.docx" )
+##############################################################################################
+##############################################################################################
+
+def processImage():
+    #process the image
+    img = Image.open(os.path.dirname(__file__) + "\\transl.PNG")
+    global text
+    text = pytesseract.image_to_string(img, lang = 'eng')
+    return text
 
 
 
-"""
-#write the text to 'transl.docx' in this directory
-try:
-    f = open('transl.txt')
-except IOError:
-        print(col.red + IOError)
-else:
-    with open('transl.txt', mode ='w') as f:     
-        f.write(text)
-        print(col.green + "text file written to " + os.path.dirname(__file__) + "\\transl.txt" )
-        f.close()
-"""
+def writeToDoc(writeBackup):
+    #write the text to 'transl.docx' in this directory
+    try:
+        document.add_paragraph('Translations:')
+    except IOError:
+            print(col.red + IOError)
+    else:
+        with open('transl.docx', mode ='w'):
+            #re.match("[a-zA-Z0-9 ,.'\"\n:();]")
+            formattedText = re.sub("[^a-zA-Z0-9 ,.'\"\n]", " ", text)
+            print(col.white + formattedText)
+            document.add_paragraph(formattedText)
+            document.save('transl.docx')
 
+        if writeBackup == True:
+            with open('translBackup.docx', mode ='w'):
+                formattedText = re.sub("[^a-zA-Z0-9 ,.'\"\n]", " ", text)
+                print(col.white + formattedText)
+                document.add_paragraph(formattedText)
+                document.save('translBackup.docx')
 
-#code asks you to edit before you continue
-inputToContinue(col.white + "please press enter to make revisions to the text file")
+            #write to the console
+            print(col.green + "text file written to " + os.path.dirname(__file__) + "\\transl.docx" )
 
-#run the text file to edit
-os.startfile(os.path.dirname(__file__) + "\\transl.txt")
-os.startfile(os.path.dirname(__file__) + "\\transl.png")
+def askForRevisions():
+    #code asks you to edit before you continue
+    inputToContinue(col.white + "please press enter to make revisions to the text file")
 
-#asks you to enter once you are done editing
-inputToContinue(col.white + "please press enter once you are done with revisions to the document")
+    #run the text file to edit
+    os.startfile(os.path.dirname(__file__) + "\\transl.docx")
+    os.startfile(os.path.dirname(__file__) + "\\transl.png")
 
+    #asks you to enter once you are done editing
+    inputToContinue(col.white + "please press enter once you are done with revisions to the document")
 
+##################################################################################################
+##################################################################################################
+def main():
+    processImage()
+    writeToDoc(True)
+    askForRevisions()
 
+main()
+##################################################################################################
+##################################################################################################
 
+border_effects = {
+    "flat": tk.FLAT,
+    "sunken": tk.SUNKEN,
+    "raised": tk.RAISED,
+    "groove": tk.GROOVE,
+    "ridge": tk.RIDGE,
+}
 
+window = tk.Tk()
 
+for relief_name, relief in border_effects.items():
+    frame = tk.Frame(master=window, relief=relief, borderwidth=5)
+    frame.pack(side=tk.LEFT)
+    label = tk.Label(master=frame, text=relief_name)
+    label.pack()
 
-
-
-
-
-
-
-"""
-# import the following libraries
-# will convert the image to text string
-import pytesseract      
-  
-# adds image processing capabilities
-from PIL import Image    
-  
- # converts the text to speech  
-import pyttsx3           
-  
-#translates into the mentioned language
-from googletrans import Translator      
-  
- # opening an image from the source path
-img = Image.open('transl.png')     
-  
-# describes image format in the output
-print(img)                          
-# path where the tesseract module is installed
-pytesseract.pytesseract.tesseract_cmd ='C:/Program Files (x86)/Tesseract-OCR/tesseract.exe'   
-# converts the image to result and saves it into result variable
-result = pytesseract.image_to_string(img)
-# write text in a text file and save it to source path   
-with open('abc.txt',mode ='w') as file:     
-    file.write(result)
-    print(result)
-                   
-p = Translator()                      
-# translates the text into german language
-k = p.translate(result,dest='german')      
-print(k)
-engine = pyttsx3.init()
-  
-# an audio will be played which speaks the test if pyttsx3 recognizes it
-engine.say(k)                             
-engine.runAndWait()
-"""
+window.mainloop()
