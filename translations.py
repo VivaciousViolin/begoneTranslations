@@ -3,8 +3,11 @@
 from PIL import Image #for image processing
 import pytesseract # for photo to text
 import os # for fliepaths and os things
-from docx import Document #to write to .docs files
+from docx import Document #to write to .docs files   INSTALL python-docx
 import unicodedata #remove unicode to transfer to .docx
+
+#https://github.com/UB-Mannheim/tesseract/wiki
+
 
 #add color class so you can print in colors easily
 class col:
@@ -35,17 +38,22 @@ text = pytesseract.image_to_string(img, lang = 'eng')
 #write to .docx prerequesites
 document = Document()
 
+
+import re
 #write the text to 'transl.docx' in this directory
 try:
     d = document.add_paragraph('Translations:')
 except IOError:
         print(col.red + IOError)
 else:
-    with open('transl.docx', mode ='w') as d:     
-        document.add_paragraph(text)
-        document.save('transl.docx')
+    with open('transl.docx', mode ='w') as d:
+        #re.match("[a-zA-Z0-9 ,.'\"\n:();]")
+        formattedText = re.sub("[a-zA-Z0-9 ,.'\"\n]", " ", text)
+        print(formattedText)
+        #document.add_paragraph(formattedText)
+        #document.save('transl.docx')
         print(col.green + "text file written to " + os.path.dirname(__file__) + "\\transl.docx" )
-        
+
 
 
 """
@@ -66,7 +74,7 @@ else:
 inputToContinue(col.white + "please press enter to make revisions to the text file")
 
 #run the text file to edit
-os.startfile(os.path.dirname(__file__) + "\\transl.docx")
+os.startfile(os.path.dirname(__file__) + "\\transl.txt")
 os.startfile(os.path.dirname(__file__) + "\\transl.png")
 
 #asks you to enter once you are done editing
