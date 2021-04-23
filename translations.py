@@ -63,19 +63,28 @@ def translate():
     # Opening MS word document 
     doc = docx.Document('transl.docx')
 
+    """
     #Filtering iltalicized text 
     Italic_Text = '' 
     for p in doc.paragraphs: 
         for run in p.runs: 
             if run.italic: 
-                Italic_Text = Italic_Text + run.text + " " 
+                Italic_Text = Italic_Text + run.text + " "
     
     #Splitting text to a list of words 
     Italic_Words =list(filter(None,Italic_Text.split(' '))) 
     print(Italic_Words)
+
     #Counting the number of italicized words 
     counter = len(Italic_Words)
     print(counter)
+    """
+    #Filtering iltalicized text 
+    highlightedText = '' 
+    for p in doc.paragraphs: 
+        for run in p.runs: 
+            if run.italic: 
+                highlightedText = highlightedText + run.text + " "
 
 ##################################################################################################
 ##################################################################################################
