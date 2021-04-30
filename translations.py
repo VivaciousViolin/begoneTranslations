@@ -63,7 +63,7 @@ def translate():
     # Opening MS word document 
     doc = docx.Document('transl.docx')
 
-    """
+    
     #Filtering iltalicized text 
     Italic_Text = '' 
     for p in doc.paragraphs: 
@@ -85,6 +85,7 @@ def translate():
         for run in p.runs: 
             if run.italic: 
                 highlightedText = highlightedText + run.text + " "
+                """
 
 ##################################################################################################
 ##################################################################################################
